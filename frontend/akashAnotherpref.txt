@@ -1,0 +1,223 @@
+Login and signup code 
+
+import React, { useState } from "react";
+
+function LoginSignup() {
+  const [isLogin, setIsLogin] = useState(true);
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-blue-100">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl flex">
+        {/* Left Side - Login Form */}
+        <div className={`w-1/2 p-4 ${isLogin ? "block" : "hidden"}`}>
+          <h2 className="text-2xl font-bold text-blue-700 mb-4">Login</h2>
+          <form className="space-y-4">
+            <input
+              type="email"
+              placeholder="Email"
+              className="w-full p-2 border rounded"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className="w-full p-2 border rounded"
+            />
+            <button className="w-full bg-blue-500 text-white py-2 rounded">
+              Login
+            </button>
+          </form>
+          <p className="text-sm mt-4">
+            Don't have an account?{" "}
+            <span
+              className="text-blue-500 cursor-pointer"
+              onClick={() => setIsLogin(false)}
+            >
+              Sign up
+            </span>
+          </p>
+        </div>
+
+        {/* Right Side - Signup Form */}
+        <div className={`w-1/2 p-4 ${isLogin ? "hidden" : "block"}`}>
+          <h2 className="text-2xl font-bold text-blue-700 mb-4">Sign Up</h2>
+          <form className="space-y-4">
+            <input
+              type="text"
+              placeholder="Username"
+              className="w-full p-2 border rounded"
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              className="w-full p-2 border rounded"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className="w-full p-2 border rounded"
+            />
+            <button className="w-full bg-blue-500 text-white py-2 rounded">
+              Sign Up
+            </button>
+          </form>
+          <p className="text-sm mt-4">
+            Already have an account?{" "}
+            <span
+              className="text-blue-500 cursor-pointer"
+              onClick={() => setIsLogin(true)}
+            >
+              Login
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default LoginSignup;
+
+
+
+
+
+
+
+
+
+
+quiz.jsx code for the openai code 
+
+import { useState, useEffect } from "react";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import axios from "axios";
+
+const Quiz = () => {
+  const { topic } = useParams(); // Get topic from URL params
+  const [searchParams] = useSearchParams(); // ✅ Read query parameters
+  const navigate = useNavigate();
+  
+  const [questions, setQuestions] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [score, setScore] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // ✅ Get the question limit from URL or default to 5
+  const numQuestions = Number(searchParams.get("numQuestions")) || 5;
+
+  // Fetch questions from the backend when the component loads
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.post(
+          "http://localhost:5000/api/quiz/generate",
+          { topic, numQuestions }, // ✅ Pass selected question count
+          { headers: { Authorization: token } }
+        );
+        setQuestions(response.data.quiz.questions);
+      } catch (err) {
+        setError("Failed to load quiz questions. Please try again later.");
+        console.error("Quiz Fetch Error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuestions();
+  }, [topic, numQuestions]); // ✅ Refetch if topic or question limit changes
+
+  const handleAnswerClick = (option) => {
+    setSelectedAnswer(option);
+  };
+
+  const handleNextQuestion = () => {
+    if (selectedAnswer === questions[currentQuestionIndex].correctAnswer) {
+      setScore(score + 1);
+    }
+
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setSelectedAnswer(null);
+    } else {
+      setLoading(false);
+    }
+  };
+
+  // ✅ Realistic Blinking Light Bulb Effect
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+        {/* Light Bulb Icon */}
+        <div className="relative flex flex-col items-center">
+          {/* Blinking Effect on the Bulb */}
+          <div className="w-16 h-16 rounded-full bg-yellow-400 animate-pulse flex items-center justify-center relative shadow-lg">
+            {/* Filament inside the bulb */}
+            <div className="w-6 h-6 border-2 border-yellow-700 rounded-full"></div>
+          </div>
+          {/* Bulb Holder */}
+          <div className="w-6 h-8 bg-gray-700 rounded-b-lg"></div>
+        </div>
+        <p className="mt-4 text-gray-600 text-lg">Loading Questions...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg text-center">
+        {currentQuestionIndex < questions.length ? (
+          <>
+            <h2 className="text-2xl font-bold text-blue-600 mb-4">{topic} Quiz</h2>
+            <p className="text-lg font-semibold text-gray-800">{questions[currentQuestionIndex].question}</p>
+            <div className="mt-4 space-y-3">
+              {questions[currentQuestionIndex].options.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleAnswerClick(option)}
+                  className={`w-full py-2 rounded-lg border transition ${
+                    selectedAnswer === option ? "bg-blue-500 text-white" : "bg-white text-gray-700 hover:bg-blue-100"
+                  }`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={handleNextQuestion}
+              disabled={!selectedAnswer}
+              className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg disabled:opacity-50"
+            >
+              {currentQuestionIndex < questions.length - 1 ? "Next Question" : "Finish Quiz"}
+            </button>
+          </>
+        ) : (
+          <div>
+            <h2 className="text-3xl font-bold text-green-600">Quiz Completed!</h2>
+            <p className="text-lg font-semibold mt-4">
+              Your Score: {score} / {questions.length}
+            </p>
+            <button
+              onClick={() => navigate("/topics")}
+              className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg"
+            >
+              Take Another Quiz
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Quiz;
