@@ -12,7 +12,7 @@ pipeline {
         stage('Build Docker Containers') {
             steps {
                 echo 'Building Docker containers...'
-                sh 'docker-compose down'      // Stop and remove old containers
+                sh 'docker compose down'      // Stop and remove old containers
                 sh 'docker-compose up --build -d' // Build and run in detached mode
             }
         }
