@@ -7,5 +7,8 @@ const authMiddleware = require("../middleware/authMiddleware");
 router.get("/:userId/attempts", authMiddleware, userController.getUserProgress);
 router.post("/attempts", authMiddleware, userController.addQuizAttempt);
 router.post("/record-login", authMiddleware, userController.recordLogin);
+router.get("/", (req, res) => {
+  res.send("✅ Users route reached");
+});
 
 module.exports = router;
