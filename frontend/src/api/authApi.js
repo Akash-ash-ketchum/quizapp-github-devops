@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = `${import.meta.env.VITE_API_URL}/auth`;
+const API_URL = "http://192.168.1.6:5000/api/auth";
 
 // ✅ Fetch user profile using token
 export const getUserProfile = async (token) => {
