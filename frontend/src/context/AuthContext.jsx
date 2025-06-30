@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
     
     // Record login time immediately after successful credential login
     try {
-      await axios.post('http://localhost:5000/api/users/record-login', { 
+      await axios.post('http://192.168.1.6:5000/api/users/record-login', { 
         loginTime: new Date() 
       }, { 
         headers: { Authorization: `Bearer ${token}` } 

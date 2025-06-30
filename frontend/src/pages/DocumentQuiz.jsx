@@ -9,7 +9,7 @@ const DocumentQuiz = () => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
-  const API_URL = "http://localhost:5000/api/quiz/generate-document";
+  const API_URL = "http://192.168.1.6:5000/api/quiz/generate-document";
   const allowedTypes = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"];
 
   // ✅ Handle file selection & validation

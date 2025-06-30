@@ -17,7 +17,7 @@ const Profile = () => {
     const fetchUserData = async () => {
       try {
         if (user) {
-          const res = await axios.get(`http://localhost:5000/api/users/${user._id}/attempts`, {
+          const res = await axios.get(`http://192.168.1.6:5000/api/users/${user._id}/attempts`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`
             }

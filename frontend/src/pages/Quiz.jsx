@@ -34,10 +34,10 @@ const Quiz = () => {
       try {
         let response;
         if (quizId) {
-          response = await axios.get(`http://localhost:5000/api/quiz/${quizId}`);
+          response = await axios.get(`http://192.168.1.6:5000/api/quiz/${quizId}`);
         } else {
           response = await axios.post(
-            `http://localhost:5000/api/quiz/generate`,
+            `http://192.168.1.6:5000/api/quiz/generate`,
             { topic, numQuestions },
             {
               headers: {
