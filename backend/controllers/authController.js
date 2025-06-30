@@ -30,7 +30,7 @@ exports.registerUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-
+    console.log("Login attempt:", email);
     // Check if user exists
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
@@ -46,6 +46,7 @@ exports.loginUser = async (req, res) => {
 
     res.json({ token });
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({ message: "Server Error" });
   }
 };
