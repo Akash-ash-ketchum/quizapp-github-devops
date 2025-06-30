@@ -12,8 +12,14 @@ pipeline {
         stage('Build Docker Containers') {
             steps {
                 echo 'Building Docker containers...'
-                sh 'docker compose down'      // Stop and remove old containers
-                sh 'docker-compose up --build -d' // Build and run in detached mode
+                sh '''
+          echo "MONGO_URI=mongodb://mongo:27017/quizdb" > backend/.env
+          echo "PORT=5000" >> backend/.env
+          echo "JWT_SECRET=supersecret123" >> backend/.env
+
+          docker compose down
+          docker compose up --build -d
+        '''
             }
         }
 
